@@ -28,7 +28,10 @@ jobs:
             libsqlite3-dev ccache \
             libncurses5:i386 libstdc++6:i386 zlib1g:i386 \
             python3-dev autoconf libtool \
-            pkg-config libltdl-dev
+            pkg-config libltdl-dev \
+            libncurses5-dev libncursesw5-dev \
+            cmake ffmpeg \
+            libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 
       - name: Instalar buildozer e dependências Python
         run: |
@@ -56,12 +59,24 @@ jobs:
 
       - name: Build do APK
         run: |
-          yes | buildozer -v android debug 2>&1 | tee build.log || true
-          ls bin/ 2>/dev/null && echo "APK gerado com sucesso!" || (cat build.log && exit 1)
+          cd $GITHUB_WORKSPACE
+          yes | buildozer -v android debug 2>&1 | tee build.log
+          echo "=== Procurando APK ==="
+          find . -name "*.apk" 2>/dev/null
 
       - name: Upload do APK como artefato
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Tabuada-APK
-          path: bin/*.apk
+          path: "**/*.apk"
           retention-days: 30
+
+      - name: Upload do log em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          retention-days: 7
+
