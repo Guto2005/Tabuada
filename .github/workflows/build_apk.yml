@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:  # permite rodar manualmente pelo botão no GitHub
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,14 +18,15 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Instalar dependências do sistema
+      - name: Habilitar arquitetura i386 e instalar dependências
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y \
             git zip unzip openjdk-17-jdk \
             build-essential libssl-dev libffi-dev \
-            libsqlite3-dev ccache libncurses5:i386 \
-            libstdc++6:i386 zlib1g:i386 \
+            libsqlite3-dev ccache \
+            libncurses5:i386 libstdc++6:i386 zlib1g:i386 \
             python3-dev autoconf libtool \
             pkg-config libltdl-dev
 
@@ -34,7 +35,7 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.36
 
-      - name: Cache do Buildozer (acelera builds futuros)
+      - name: Cache do Buildozer
         uses: actions/cache@v3
         with:
           path: |
@@ -44,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
-      - name: Build do APK (modo debug)
+      - name: Build do APK
         run: |
           buildozer -v android debug
 
