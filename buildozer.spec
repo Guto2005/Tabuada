@@ -18,13 +18,15 @@ android.permissions = INTERNET
 
 android.api = 33
 android.minapi = 21
-android.ndk = 25b
+android.ndk = 25.2.9519653
 android.ndk_api = 21
+
+android.sdk_path = /usr/local/lib/android/sdk
+android.ndk_path = /usr/local/lib/android/sdk/ndk/25.2.9519653
 
 android.archs = arm64-v8a, armeabi-v7a
 
 android.allow_backup = True
-
 android.accept_sdk_license = True
 
 [buildozer]
