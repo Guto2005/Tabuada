@@ -35,6 +35,15 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.36
 
+      - name: Aceitar licenças do Android SDK
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          echo -e "\nd975f751698a77b662f1254ddbeed3901e976f5a" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          echo -e "\n33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          echo -e "\n859f317696f67ef3d7f30a50a5560e7834b43903" > ~/.buildozer/android/platform/android-sdk/licenses/intel-android-extra-license
+
       - name: Cache do Buildozer
         uses: actions/cache@v3
         with:
@@ -47,7 +56,8 @@ jobs:
 
       - name: Build do APK
         run: |
-          buildozer -v android debug
+          yes | buildozer -v android debug 2>&1 | tee build.log || true
+          ls bin/ 2>/dev/null && echo "APK gerado com sucesso!" || (cat build.log && exit 1)
 
       - name: Upload do APK como artefato
         uses: actions/upload-artifact@v4
